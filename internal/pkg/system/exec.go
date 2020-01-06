@@ -17,7 +17,7 @@ func CheckError(output[]byte, err error) {
 }
 
 
-func ShellExec(dir string, cmd string, args ...string) (error) {
+func ShellExec(dir string, cmd string, args ...string) error {
 
 	ctx := context.Background()
 	shell := exec.CommandContext(ctx,cmd,args...)

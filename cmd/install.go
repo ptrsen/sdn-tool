@@ -23,7 +23,6 @@ import (
 )
 
 
-
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
@@ -36,9 +35,10 @@ func init() {
 	rootCmd.AddCommand(installCmd)
 }
 
-func install (cmd *cobra.Command, args []string) {
-	fmt.Println("Install Step ...")
 
+func install (cmd *cobra.Command, args []string) {
+
+	fmt.Println("Install Step ...")
 
 	projectPath, err := os.Getwd()
 	system.CheckError([]byte("Cant find Project path"), err)
