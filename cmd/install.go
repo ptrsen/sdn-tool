@@ -19,35 +19,62 @@ import (
 	"fmt"
 	"github.com/ptrsen/sdn-tool/internal/pkg/system"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
-	Short: "Installs necessary things from scripts",
-	Long: `Installs necessary things include docker`,
+	Short: "Installs necessary things for emulation",
+	Long: `Installs necessary things for network emulation. For example:
+             sudo ./sdntool install --docker`,
 	Run: install,
 }
 
+var installDocker bool
+
 func init() {
 	rootCmd.AddCommand(installCmd)
+	installCmd.PersistentFlags().BoolVar(&installDocker, "docker",false,"Installs Docker CE")
 }
 
 
 func install (cmd *cobra.Command, args []string) {
 
-	fmt.Println("Install Step ...")
+	if installDocker {
 
-	projectPath, err := os.Getwd()
-	system.CheckError([]byte("Cant find Project path"), err)
-	projectPath = projectPath[:len(projectPath)-3]
+		fmt.Println("Install Step ...")
 
-	err = system.ShellExec("/bin","bash", projectPath + "/scripts/docker-install.sh")
-	system.CheckError([]byte("Cant execute /scripts/docker-install.sh"),err)
+		// Install docker engine CE
+		// https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
-	fmt.Println("Docker Installed!")
+		installCmds := []string{
+			"sudo apt update",  // Update enviroment
+			"sudo apt -y dist-upgrade",
+			"sudo apt -y purge docker docker-engine docker.io containerd runc",   // Remove old docker version
+			"sudo apt -y purge docker-ce docker-ce-cli containerd.io",            // Remove new docker version
+			"sudo rm -rf /var/lib/docker",
+			"sudo apt -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common bridge-utils net-tools", // Install pre-reqs HTTPS for apt
+			"curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -", // Add GPG key for official docker repository
+			"sudo apt-key fingerprint 0EBFCD88", //  Check GPC Key
+			"sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"", // Add docker latest repository to apt
+			"sudo apt update",  // Update enviroment
+			"sudo apt -y dist-upgrade",
+			"apt-cache policy docker-ce", // Check recommended docker source and installation version
+			"sudo apt -y install docker-ce docker-ce-cli containerd.io", // Install latest docker version
+			"sudo docker --version", // Checking version
+			"sudo docker run hello-world", // Verifying Docker
+		}
+
+		for _, cmd := range installCmds {
+			err := system.ShellExec("/bin","sh", "-c", cmd)
+			system.CheckError("Cannot install docker ",err)
+		}
+
+		fmt.Println("Docker Installed!")
+
+	}
+
 
 }
 
