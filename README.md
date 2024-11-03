@@ -6,4 +6,4 @@ This repository contains the code for a container-based SDN emulation tool that 
 
 
 ## References
-[PT+21] E. Petersen and M. Antonio To: DockSDN - A hybrid container-based software-defined networking emulation tool. https://onlinelibrary.wiley.com/doi/abs/10.1002/nem.2166, doi: https://doi.org/10.1002/nem.2166
+[PT+21] E. Petersen and M. Antonio To: DockSDN - A hybrid container-based software-defined networking emulation tool. doi: https://doi.org/10.1002/nem.2166
